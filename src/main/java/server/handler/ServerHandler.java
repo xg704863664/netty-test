@@ -2,6 +2,7 @@ package server.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
 
 public class ServerHandler extends SimpleChannelInboundHandler {
 
@@ -23,8 +24,13 @@ public class ServerHandler extends SimpleChannelInboundHandler {
     }
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
-                System.out.println("服务器接收消息："+msg.toString());
-                channelHandlerContext.pipeline().write("收到了！");
+        try {
+            System.out.println("服务器接收消息："+msg.toString());
+            channelHandlerContext.pipeline().write("收到了！");
+        }finally {
+            ReferenceCountUtil.release(msg);
+        }
+
     }
 
     @Override
